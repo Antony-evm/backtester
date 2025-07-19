@@ -1,0 +1,16 @@
+services:
+  indicator-service:
+    container_name: backtester
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GH_PAT: ${GH_PAT}
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - PORT=${PORT}
+    volumes:
+      - ./indicator_service:/app/indicator_service
+      - ./main.py:/app/main.py
+    restart: unless-stopped
