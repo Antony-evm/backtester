@@ -5,7 +5,8 @@ from typing import Dict, Optional
 
 from pydantic import BaseModel, RootModel
 
-from modules.strategy_service.enums_shared.order_type import OrderType
+from domain.enums.order_type import OrderType
+from domain.enums.rule_comparison_method import RuleComparisonMethod
 
 
 class TilePropertyParameters(BaseModel):
@@ -30,7 +31,7 @@ class Comparison(BaseModel):
     """
     Represents a comparison operation between two rule properties.
     """
-    value: ComparisonMethod
+    value: RuleComparisonMethod
 
 
 class RuleProperties(BaseModel):
@@ -59,7 +60,7 @@ class OrderTypeRules(BaseModel):
     order_type_rule_id: Optional[str] = None
 
 
-class TradingSystemRules(RootModel[Dict[OrderType, OrderTypeRules]]):
+class TradingSystem(RootModel[Dict[OrderType, OrderTypeRules]]):
     """
     Represents the trading system rules for different order types.
     """

@@ -1,10 +1,10 @@
 """
-TickerTimeframe Enum
+TickerInterval Enum
 """
 from enum import Enum
 
 
-class TickerTimefram(Enum):
+class TickerInterval(Enum):
     """
     Enum representing the types of properties that can be used in a rule.
     """

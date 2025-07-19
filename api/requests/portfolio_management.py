@@ -8,6 +8,8 @@ from backtesting_io_manager.exceptions.strategy_exceptions import (
     InvalidStopLoss, InvalidTakeProfit)
 from pydantic import BaseModel, Field, field_validator
 
+from domain.enums.trade_size_type import TradeSizeType
+
 logger = logging.getLogger(__name__)
 
 
@@ -15,7 +17,7 @@ class TradeSize(BaseModel):
     """
     Request model for trade size configuration.
     """
-    type: str = Field(
+    type: TradeSizeType = Field(
         ...,
         description="Type of trade size",
         examples=["DYNAMIC", "STATIC"]

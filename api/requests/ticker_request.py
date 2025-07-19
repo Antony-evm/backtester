@@ -6,6 +6,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from domain.enums.ticker_interval import TickerInterval
+
 
 class TickerRequest(BaseModel):
     """
@@ -26,7 +28,7 @@ class TickerRequest(BaseModel):
         description="End date in ISO Format, maximum previous day",
         examples=["2025-01-02"]
     )
-    interval: str = Field(
+    interval: TickerInterval = Field(
         "1d",
         description="Interval each ticker period represents",
         examples=["1d"]

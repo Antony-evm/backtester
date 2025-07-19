@@ -1,25 +1,32 @@
 from datetime import datetime, timezone
 
-from backtesting_io_manager.response_models import (Metadata, SuccessResponse,
-                                                    SuccessResponseModel)
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 
+from api.dependencies import init_backtester
+from api.requests.backtesting_request import BacktestingRequest
 
 trading_system_router = APIRouter()
 
 
 @trading_system_router.post(
-    "/backtest",
+    "/create",
 )
 async def create_trading_system(
-        trading_system_service=Depends(init_trading_system_service),
-) -> SuccessResponse:
+        backtesting_request: BacktestingRequest,
+        backtester=Depends(init_backtester),
+):
     """
     Create a trading system and evaluate its performance.
     """
     start_time = datetime.now(timezone.utc)
-
-    return SuccessResponse(
-        response_data=results,
-        metadata=Metadata.from_start_time(start_time)
+    results = backtester.backtest(
+        backtesting_request=backtesting_request
+    )
+    return JSONResponse(
+        content={
+            "message": "Trading system created successfully",
+            "results": results.to_dict(),
+            "execution_time": (datetime.now(timezone.utc) - start_time).total_seconds()
+        }
     )
