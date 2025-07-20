@@ -5,7 +5,7 @@ from copy import deepcopy
 
 import pandas as pd
 
-from modules.strategy_service.enums_shared.order_type import OrderType
+from backtester.domain.enums.order_type import OrderType
 
 
 class Signals:

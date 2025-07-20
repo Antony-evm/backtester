@@ -60,7 +60,7 @@ class OrderTypeRules(BaseModel):
     order_type_rule_id: Optional[str] = None
 
 
-class TradingSystem(BaseModel):
+class TradingSystemRules(BaseModel):
     """
     Represents the trading system rules for different order types.
     """

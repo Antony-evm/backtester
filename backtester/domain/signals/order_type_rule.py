@@ -5,13 +5,12 @@ from copy import deepcopy
 
 import pandas as pd
 
-from modules.strategy_service.api.requests.trading_system_rules import \
-    OrderTypeRules
-from modules.strategy_service.enums_shared.order_type import OrderType
 
 from .group_rule import GroupRule
 from .indicator_registry import IndicatorRegistry
 from .signals import Signals
+from backtester.domain.enums.order_type import OrderType
+from backtester.api.requests.trading_system import OrderTypeRules
 
 
 class OrderTypeRule:
@@ -24,7 +23,6 @@ class OrderTypeRule:
             signal_indexes: pd.Series,
             order_type: OrderType,
             order_type_rules: OrderTypeRules,
-            customer_id: str,
             trading_system_rule_id: str,
             indicator_registry: IndicatorRegistry
     ):
@@ -33,11 +31,9 @@ class OrderTypeRule:
         :param signal_indexes: pd.Series with signals
         :param order_type: OrderType, indicating the type of order (BUY/SELL)
         :param order_type_rules: OrderTypeRules, containing rules for the order type
-        :param customer_id: ID of the customer
         :param trading_system_rule_id: ID of the trading system rule
         :param indicator_registry: IndicatorRegistry instance to manage indicators
         """
-        self.customer_id = customer_id
         self.trading_system_rule_id = trading_system_rule_id
         self.order_type_rule_id = order_type_rules.order_type_rule_id
         self.signal_indexes: pd.Series = signal_indexes
@@ -56,7 +52,6 @@ class OrderTypeRule:
                     order_type=self.order_type,
                     rule_properties=self.order_type_rules.group_rules.get(key).rules,
                     group_rule_id=self.order_type_rules.group_rules.get(key).group_rule_id,
-                    customer_id=self.customer_id,
                     order_type_rule_id=self.order_type_rule_id,
                     indicator_registry=indicator_registry
                 ) for key in self.order_type_rules.group_rules.keys()

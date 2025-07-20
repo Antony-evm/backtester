@@ -6,12 +6,14 @@ from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 
-from modules.strategy_service.enums_shared.order_type import OrderType
-from modules.strategy_service.interfaces.signal.domain import (
-    GroupRule, OrderTypeRule, Rule, RuleComparisonMethod, RulePropertyType,
-    Tile, TradingSystemRule)
-from modules.strategy_service.interfaces.signal.infrastructure.indicator_client import \
-    IndicatorClient
+from backtester.domain.enums.order_type import OrderType
+from backtester.domain.enums.rule_comparison_method import RuleComparisonMethod
+from backtester.domain.enums.rule_property_type import RulePropertyType
+from backtester.domain.signals.group_rule import GroupRule
+from backtester.domain.signals.order_type_rule import OrderTypeRule
+from backtester.domain.signals.rule import Rule
+from backtester.domain.signals.tile import Tile
+from backtester.domain.signals.trading_sustem_rule import TradingSystemRule
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +25,12 @@ class SignalService:
 
     def __init__(
             self,
-            indicator_client: IndicatorClient
+            indicator_service: IndicatorService
     ):
         """
         Initializes the SignalService with an IndicatorClient.
         """
-        self.indicator_client = indicator_client
+        self.indicator_service = indicator_service
 
     @staticmethod
     def _get_value_mask(tile: Tile) -> float:
@@ -51,7 +53,7 @@ class SignalService:
         :return: A dictionary of masks for each indicator.
         """
         logger.debug("Calculating indicator masks for ticker data.")
-        masks = await self.indicator_client.get_indicator_masks(
+        masks = await self.indicator_service.get_indicator_masks(
             df=ticker_data,
             indicator_data=indicator_data
         )

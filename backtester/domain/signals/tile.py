@@ -9,10 +9,8 @@ import pandas as pd
 from backtesting_io_manager.exceptions.validation_exceptions import \
     InvalidComparisonError
 
-from modules.strategy_service.api.requests.trading_system_rules import \
-    RuleProperty
-from modules.strategy_service.interfaces.signal.domain.enums import \
-    RulePropertyType
+from backtester.api.requests.trading_system import RuleProperty
+from backtester.domain.enums.rule_property_type import RulePropertyType
 
 
 class Tile:
@@ -23,16 +21,13 @@ class Tile:
     def __init__(
             self,
             rule_property: RuleProperty,
-            customer_id: str,
             rule_id: str
     ):
         """
         Initializes a Tile instance.
         :param rule_property: RuleProperty, containing the properties of the rule
-        :param customer_id: ID of the customer
         :param rule_id: ID of the rule
         """
-        self.customer_id = customer_id
         self.rule_id = rule_id
         self.id = hashlib.sha256(os.urandom(32)).hexdigest()
         self.type = RulePropertyType(rule_property.type)
@@ -69,5 +64,5 @@ class Tile:
         Returns a string representation of the Tile instance.
         """
         return f"Tile(id={self.id}, type={self.type}, name={self.name}, " \
-               f"parameters={self.parameters}, customer_id={self.customer_id}, " \
+               f"parameters={self.parameters}, " \
                f"rule_id={self.rule_id})"

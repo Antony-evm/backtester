@@ -5,15 +5,14 @@ from copy import deepcopy
 
 import pandas as pd
 
-from modules.strategy_service.api.requests.trading_system_rules import \
-    RuleProperties
-from modules.strategy_service.enums_shared.order_type import OrderType
-from modules.strategy_service.interfaces.signal.domain.enums import (
-    RuleComparisonMethod, RulePropertyType)
 
 from .indicator_registry import IndicatorRegistry
 from .signals import Signals
 from .tile import Tile
+from backtester.domain.enums.order_type import OrderType
+from backtester.domain.enums.rule_comparison_method import RuleComparisonMethod
+from backtester.domain.enums.rule_property_type import RulePropertyType
+from backtester.api.requests.trading_system import RuleProperties
 
 
 class Rule:
@@ -28,14 +27,12 @@ class Rule:
             signal_indexes: pd.Series,
             order_type: OrderType,
             rule_properties: RuleProperties,
-            customer_id: str,
             group_rule_id: str,
             indicator_registry: IndicatorRegistry
     ):
         """
         Initializes a Rule instance.
         """
-        self.customer_id = customer_id
         self.group_rule_id = group_rule_id
         self.rule_id = rule_properties.rule_id
         self.signal_indexes = signal_indexes
@@ -43,14 +40,12 @@ class Rule:
         self.indicator_registry = indicator_registry
         self.first_tile: Tile = Tile(
             rule_property=rule_properties.first_property,
-            customer_id=self.customer_id,
             rule_id=self.rule_id
         )
         if self.first_tile.type == RulePropertyType.INDICATOR:
             self.indicator_registry.register_indicator(self.first_tile)
         self.second_tile: Tile = Tile(
             rule_property=rule_properties.second_property,
-            customer_id=self.customer_id,
             rule_id=self.rule_id
         )
         if self.second_tile.type == RulePropertyType.INDICATOR:

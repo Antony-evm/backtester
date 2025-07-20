@@ -5,13 +5,12 @@ from copy import deepcopy
 
 import pandas as pd
 
-from modules.strategy_service.api.requests.trading_system_rules import \
-    TradingSystemRules
-from modules.strategy_service.enums_shared.order_type import OrderType
 
 from .indicator_registry import IndicatorRegistry
 from .order_type_rule import OrderTypeRule
 from .signals import Signals
+from backtester.api.requests.trading_system import TradingSystemRules
+from backtester.domain.enums.order_type import OrderType
 
 
 class TradingSystemRule:
@@ -25,7 +24,6 @@ class TradingSystemRule:
             signal_indexes: pd.Series,
             trading_system_rules: TradingSystemRules,
             trading_system_rule_id: str,
-            customer_id: str,
             indicator_registry: IndicatorRegistry
     ):
         """
@@ -37,7 +35,6 @@ class TradingSystemRule:
         :param customer_id: ID of the customer
         :param indicator_registry: IndicatorRegistry instance to manage indicators
         """
-        self.customer_id = customer_id
         self.trading_system_rule_id = trading_system_rule_id
         self.signal_indexes = signal_indexes
         self.base_signals = Signals(
@@ -48,7 +45,6 @@ class TradingSystemRule:
             signal_indexes=deepcopy(signal_indexes),
             order_type=OrderType.BUY,
             order_type_rules=trading_system_rules.root.get(OrderType.BUY),
-            customer_id=self.customer_id,
             trading_system_rule_id=self.trading_system_rule_id,
             indicator_registry=indicator_registry
         )
@@ -57,7 +53,6 @@ class TradingSystemRule:
             signal_indexes=deepcopy(signal_indexes),
             order_type=OrderType.SELL,
             order_type_rules=trading_system_rules.root.get(OrderType.SELL),
-            customer_id=self.customer_id,
             trading_system_rule_id=self.trading_system_rule_id,
             indicator_registry=indicator_registry
         )
@@ -69,5 +64,4 @@ class TradingSystemRule:
         Returns a string representation of the TradingSystemRule instance.
         """
         return (f"TradingSystemRule("
-                f"trading_system_rule_id={self.trading_system_rule_id},"
-                f" customer_id={self.customer_id})")
+                f"trading_system_rule_id={self.trading_system_rule_id}")
