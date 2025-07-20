@@ -42,7 +42,7 @@ This is a much simpler version of the original Hawktrader with some acknowledged
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/Antony-evm/backtester.git
 cd backtester
 
 # Build and run with Docker Compose
