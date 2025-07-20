@@ -51,6 +51,7 @@ docker compose up
 ```
 
 The API will be available at `http://localhost:8080`
+Docs can found under `http://localhost:8080/docs`
 
 ### Example Request Body
 
@@ -60,11 +61,6 @@ This example demonstrates a **Moving Average Crossover + RSI Filter Strategy**:
 
 - **BUY Signal**: When 7-period MA crosses above 21-period MA AND RSI > 20
 - **SELL Signal**: When 7-period MA crosses below 21-period MA AND RSI < 80
-
-This is a trend-following strategy with momentum confirmation, designed to:
-
-- Enter positions when short-term trend turns bullish (MA crossover) with sufficient momentum (RSI filter)
-- Exit positions when short-term trend turns bearish with overbought conditions releasing (RSI < 80)
 
 ```json
 {
@@ -209,37 +205,6 @@ This is a trend-following strategy with momentum confirmation, designed to:
 5. Add the example JSON above in the request body
 6. Send the request
 
-### Response
-
-The API returns comprehensive backtesting results including:
-
-- Performance metrics (returns, Sharpe ratio, max drawdown)
-- Trade history
-- Strategy statistics
-- Execution metadata
-
-## Project Structure
-
-```
-backtester/
-├── api/                    # REST API layer
-│   ├── requests/          # Request models
-│   ├── responses/         # Response models
-│   └── routes.py          # API endpoints
-├── application/           # Business logic layer
-│   ├── backtester.py      # Main backtesting engine
-│   ├── indicator_service.py
-│   ├── strategy_service.py
-│   └── ...
-├── domain/                # Domain models and enums
-│   ├── enums/            # Trading enums
-│   ├── indicators/       # Technical indicators
-│   ├── signals/          # Trading signals
-│   └── strategy/         # Strategy models
-└── infrastructure/        # External services
-    └── ticker_provider.py # Data provider
-```
-
 ## Available Technical Indicators
 
 The system supports various technical indicators through TA-Lib:
@@ -248,11 +213,11 @@ The system supports various technical indicators through TA-Lib:
 - Exponential Moving Average (EMA)
 - Relative Strength Index (RSI)
 
-Feel free to contribute more. Talib has several implemented
+Feel free to contribute further. Talib has several implemented.
 
 ## Learn More
 
-I'm documenting the entire development process and architectural decisions on Medium. Follow and clap if you find it helpful! 📚
+I'm documenting the entire development process and architectural decisions on Medium. Follow and clap if you find it helpful!
 
 **Article Series:**
 
@@ -261,36 +226,7 @@ I'm documenting the entire development process and architectural decisions on Me
 
 Each article explains the reasoning behind technical decisions, trade-offs, and lessons learned during development.
 
-## Contributing
-
-This project is in active development. Contributions are welcome, especially in the following areas:
-
-- Adding comprehensive test coverage
-- Improving signal coupling and testability
-- Implementing database lookup tables for enums
-- Adding more sophisticated portfolio management features
-- Performance optimizations
-
 ## Homage
 
-Before diving into the code, please pay homage to those who came before us in the trading systems space:
+Before diving into the code, please pay homage to the fallen:
 🪦 [Visit the 404 Tomb](https://www.404tomb.com/tombstone/b3820b48-567b-4771-a1d4-ba841bf8fcc2)
-
-## License
-
-[Add your license information here]
-
-## Roadmap
-
-- [ ] Restore comprehensive test suite
-- [ ] Improve signal architecture for better testability
-- [ ] Replace enums with database lookup tables
-- [ ] Add more portfolio management strategies
-- [ ] Performance optimizations
-- [ ] Enhanced error handling and validation
-
-## Support
-
-This is an open-source version provided as-is. While we aim to ensure functionality, some features may not work 100% due to the removal of tests and simplified architecture.
-
-For issues and feature requests, please use the GitHub issue tracker.
