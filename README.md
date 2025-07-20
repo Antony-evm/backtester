@@ -229,4 +229,4 @@ Each article explains the reasoning behind technical decisions, trade-offs, and 
 ## Homage
 
 Before diving into the code, please pay homage to the fallen:
-🪦 [Visit the 404 Tomb](https://www.404tomb.com/tombstone/b3820b48-567b-4771-a1d4-ba841bf8fcc2)
+🪦 [Hawktrader](https://www.404tomb.com/tombstone/b3820b48-567b-4771-a1d4-ba841bf8fcc2)
