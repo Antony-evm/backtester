@@ -1,8 +1,5 @@
 import logging
 from typing import Dict
-
-
-
 from backtester.domain.indicators.talib_indicators import *
 
 logger = logging.getLogger(__name__)

@@ -6,6 +6,7 @@ from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 
+from backtester.application.indicator_service import IndicatorService
 from backtester.domain.enums.order_type import OrderType
 from backtester.domain.enums.rule_comparison_method import RuleComparisonMethod
 from backtester.domain.enums.rule_property_type import RulePropertyType

@@ -13,6 +13,7 @@ from backtester.api.requests.portfolio_management import TradeSize, TradeTargets
 from backtester.domain.enums.order_type import OrderType
 from backtester.domain.enums.trade_size_type import TradeSizeType
 from backtester.domain.enums.trade_result import TradeResult
+from backtester.domain.enums.trading_period_result import TradingPeriodResult
 
 
 class Trade:
@@ -22,7 +23,6 @@ class Trade:
 
     def __init__(
             self,
-            request_id: str,
             starting_portfolio_amount: float,
             trade_size: TradeSize,
             trade_targets: TradeTargets,
@@ -30,13 +30,11 @@ class Trade:
     ):
         """
         Initializes a Trade instance.
-        :param request_id: request identifier for the backtesting session.
         :param starting_portfolio_amount: starting amount of the portfolio for the trade.
         :param trade_size: trade size settings, either dynamic or static.
         :param trade_targets: trade targets including take profit and stop loss values.
         :param order_type: type of order for the trade (buy or sell).
         """
-        self.request_id = request_id
         self.id = hashlib.sha256(os.urandom(32)).hexdigest()
         self.starting_portfolio_amount = starting_portfolio_amount
         self.trade_size_type = TradeSizeType(trade_size.type)
@@ -203,7 +201,6 @@ class Trade:
         """
         return (
             f"Trade(id={self.id}, "
-            f"request_id={self.request_id}, "
             f"starting_portfolio_amount={self.starting_portfolio_amount}, "
             f"trade_size={self.trade_size_type, self.trade_size_value}, "
             f"take_profit={self.take_profit}, "

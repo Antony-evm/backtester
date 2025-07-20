@@ -2,7 +2,6 @@
 Strategy entity for backtesting in the strategy service.
 """
 
-
 from .trade import Trade
 from backtester.api.requests.portfolio_management import PortfolioManagement, TradeSize, TradeTargets
 
@@ -14,21 +13,12 @@ class Strategy:
 
     def __init__(
             self,
-            customer_id: str,
             portfolio_management: PortfolioManagement,
-            request_id: str,
-            trading_system_id: str
     ):
         """
         Initializes a Strategy instance.
-        :param customer_id: customer identifier for the strategy.
         :param portfolio_management: Portfolio object containing initial amounts and trade settings.
-        :param request_id: unique identifier for the backtesting request.
-        :param trading_system_id: identifier for the trading system associated with the strategy.
         """
-        self.trading_system_id = trading_system_id
-        self.request_id = request_id
-        self.customer_id = customer_id
         self.starting_amount = portfolio_management.starting_amount
         self.current_amount = portfolio_management.starting_amount
         self.trade_size: TradeSize = portfolio_management.trade_size
@@ -102,9 +92,7 @@ class Strategy:
         Returns a string representation of the Strategy instance.
         """
         return (
-            f"Strategy(customer_id={self.customer_id}, "
-            f"trading_system_id={self.trading_system_id}, "
-            f"request_id={self.request_id}, "
+            f"Strategy("
             f"starting_amount={self.starting_amount}, "
             f"current_amount={self.current_amount}, "
             f"trade_size={self.trade_size}, "
