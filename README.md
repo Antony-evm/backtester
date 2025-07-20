@@ -1,6 +1,6 @@
 # Hawktrader Core - Open Source Backtesting Engine
 
-This is the open-sourced core of **Hawktrader**, a sophisticated backtesting platform for trading strategies. This simplified version provides the essential backtesting functionality while removing the complexity of the full commercial platform.
+This is the open-sourced core of **Hawktrader**, a backtesting platform for trading strategies. This simplified version provides the essential backtesting functionality while removing the complexity of the initial commercial platform.
 
 ## What's Included
 
@@ -37,10 +37,8 @@ This is a much simpler version of the original Hawktrader with some acknowledged
 ### Prerequisites
 
 - Python 3.8+
-- Docker (optional)
-- TA-Lib (Technical Analysis Library)
-
-### Option 1: Run with Docker (Recommended)
+- Docker
+- TA-Lib
 
 ```bash
 # Clone the repository
@@ -48,91 +46,156 @@ git clone <repository-url>
 cd backtester
 
 # Build and run with Docker Compose
-docker-compose up --build
+docker compose build
+docker compose up
 ```
 
 The API will be available at `http://localhost:8080`
 
-### Option 2: Local Development Setup
-
-1. **Install TA-Lib** (required for technical indicators):
-
-   **Windows:**
-
-   - Download TA-Lib from: http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-msvc.zip
-   - Extract and follow installation instructions
-
-   **macOS:**
-
-   ```bash
-   brew install ta-lib
-   ```
-
-   **Linux:**
-
-   ```bash
-   wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
-   tar -xzf ta-lib-0.4.0-src.tar.gz
-   cd ta-lib/
-   ./configure --prefix=/usr
-   make
-   sudo make install
-   ```
-
-2. **Install Python dependencies:**
-
-   ```bash
-   pip install -r requirements.txt
-   pip install TA-Lib
-   ```
-
-3. **Run the application:**
-   ```bash
-   python main.py
-   ```
-
-## API Usage
-
-### Endpoint
-
-```
-POST http://localhost:8080/api/v1/trading-systems/create
-```
-
 ### Example Request Body
+
+This example demonstrates a **Moving Average Crossover + RSI Filter Strategy**:
+
+**Strategy Logic:**
+
+- **BUY Signal**: When 7-period MA crosses above 21-period MA AND RSI > 20
+- **SELL Signal**: When 7-period MA crosses below 21-period MA AND RSI < 80
+
+This is a trend-following strategy with momentum confirmation, designed to:
+
+- Enter positions when short-term trend turns bullish (MA crossover) with sufficient momentum (RSI filter)
+- Exit positions when short-term trend turns bearish with overbought conditions releasing (RSI < 80)
 
 ```json
 {
   "ticker_request": {
-    "symbol": "AAPL",
-    "start_date": "2023-01-01",
-    "end_date": "2024-01-01",
+    "ticker": "MSFT",
+    "start_date": "2000-01-01",
+    "end_date": "2010-01-01",
     "interval": "1d"
   },
   "portfolio_management": {
-    "initial_capital": 10000,
-    "trade_size_type": "FIXED_AMOUNT",
-    "trade_size_value": 1000
+    "starting_amount": 10000,
+    "trade_size": {
+      "value": 0.2,
+      "type": "DYNAMIC"
+    },
+    "trade_targets": {
+      "take_profit": 0.2,
+      "stop_loss": -0.1
+    }
   },
   "trading_system_rules": {
-    "entry_rules": [
-      {
-        "indicator": "SMA",
-        "parameters": { "period": 20 },
-        "comparison": "CROSS_ABOVE",
-        "target_indicator": "SMA",
-        "target_parameters": { "period": 50 }
+    "BUY": {
+      "order_type_rule_id": "1",
+      "group_rules": {
+        "1": {
+          "group_rule_id": "1",
+          "rules": {
+            "1": {
+              "rule_id": "1",
+              "first_property": {
+                "type": "INDICATOR",
+                "name": "MA",
+                "parameters": {
+                  "timeperiod": 7
+                }
+              },
+              "comparison": {
+                "value": "CROSSES_ABOVE"
+              },
+              "second_property": {
+                "type": "INDICATOR",
+                "name": "MA",
+                "parameters": {
+                  "timeperiod": 21
+                }
+              }
+            }
+          }
+        },
+        "2": {
+          "group_rule_id": "2",
+          "rules": {
+            "2": {
+              "rule_id": "2",
+              "first_property": {
+                "type": "INDICATOR",
+                "name": "RSI",
+                "parameters": {
+                  "timeperiod": 7
+                }
+              },
+              "comparison": {
+                "value": "IS_ABOVE"
+              },
+              "second_property": {
+                "type": "VALUE",
+                "name": "value",
+                "parameters": {
+                  "value": 20
+                }
+              }
+            }
+          }
+        }
       }
-    ],
-    "exit_rules": [
-      {
-        "indicator": "SMA",
-        "parameters": { "period": 20 },
-        "comparison": "CROSS_BELOW",
-        "target_indicator": "SMA",
-        "target_parameters": { "period": 50 }
+    },
+    "SELL": {
+      "order_type_rule_id": "2",
+      "group_rules": {
+        "3": {
+          "group_rule_id": "3",
+          "rules": {
+            "3": {
+              "rule_id": "3",
+              "first_property": {
+                "type": "INDICATOR",
+                "name": "MA",
+                "parameters": {
+                  "timeperiod": 7
+                }
+              },
+              "comparison": {
+                "value": "CROSSES_BELOW"
+              },
+              "second_property": {
+                "type": "INDICATOR",
+                "name": "MA",
+                "parameters": {
+                  "timeperiod": 21
+                }
+              }
+            }
+          }
+        },
+        "4": {
+          "group_rule_id": "4",
+          "rules": {
+            "4": {
+              "rule_id": "4",
+              "first_property": {
+                "type": "INDICATOR",
+                "name": "RSI",
+                "parameters": {
+                  "timeperiod": 7
+                }
+              },
+              "comparison": {
+                "value": "IS_BELOW"
+              },
+              "second_property": {
+                "type": "VALUE",
+                "name": "value",
+                "parameters": {
+                  "value": 80
+                }
+              }
+            }
+          }
+        }
       }
-    ]
+    }
   }
 }
 ```
@@ -181,12 +244,22 @@ backtester/
 
 The system supports various technical indicators through TA-Lib:
 
-- Simple Moving Average (SMA)
+- Simple Moving Average (MA)
 - Exponential Moving Average (EMA)
 - Relative Strength Index (RSI)
-- Moving Average Convergence Divergence (MACD)
-- Bollinger Bands
-- And many more...
+
+Feel free to contribute more. Talib has several implemented
+
+## Learn More
+
+I'm documenting the entire development process and architectural decisions on Medium. Follow and clap if you find it helpful! 📚
+
+**Article Series:**
+
+- [Part 1 - Architecture](https://medium.com/@antony.evmo/building-a-backtesting-engine-with-fastapi-yfinance-and-ta-lib-part-1-b9ee02c2ceb5): Building a backtesting engine with FastAPI, yfinance and TA-Lib
+- [Part 2 - Ticker Data](https://medium.com/@antony.evmo/building-a-backtesting-engine-with-fastapi-yfinance-and-ta-lib-part-2-18cce7342814): Implementing ticker data retrieval with yfinance
+
+Each article explains the reasoning behind technical decisions, trade-offs, and lessons learned during development.
 
 ## Contributing
 
@@ -197,6 +270,11 @@ This project is in active development. Contributions are welcome, especially in 
 - Implementing database lookup tables for enums
 - Adding more sophisticated portfolio management features
 - Performance optimizations
+
+## Homage
+
+Before diving into the code, please pay homage to those who came before us in the trading systems space:
+🪦 [Visit the 404 Tomb](https://www.404tomb.com/tombstone/b3820b48-567b-4771-a1d4-ba841bf8fcc2)
 
 ## License
 
