@@ -6,7 +6,6 @@ import os
 from datetime import datetime
 from typing import List, Optional
 
-
 from .thresholds import Thresholds
 from .trading_period import TradingPeriod
 from backtester.api.requests.portfolio_management import TradeSize, TradeTargets

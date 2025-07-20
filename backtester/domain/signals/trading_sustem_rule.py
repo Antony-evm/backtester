@@ -23,7 +23,6 @@ class TradingSystemRule:
             self,
             signal_indexes: pd.Series,
             trading_system_rules: TradingSystemRules,
-            trading_system_rule_id: str,
             indicator_registry: IndicatorRegistry
     ):
         """
@@ -31,11 +30,8 @@ class TradingSystemRule:
         :param signal_indexes: pd.Series with signal indexes,
         :param trading_system_rules: TradingSystemRules,
          containing rules for the trading system
-        :param trading_system_rule_id: id of the trading system rule
-        :param customer_id: ID of the customer
         :param indicator_registry: IndicatorRegistry instance to manage indicators
         """
-        self.trading_system_rule_id = trading_system_rule_id
         self.signal_indexes = signal_indexes
         self.base_signals = Signals(
             signal_indexes=deepcopy(signal_indexes),
@@ -44,24 +40,15 @@ class TradingSystemRule:
         self.buy_rules = OrderTypeRule(
             signal_indexes=deepcopy(signal_indexes),
             order_type=OrderType.BUY,
-            order_type_rules=trading_system_rules.root.get(OrderType.BUY),
-            trading_system_rule_id=self.trading_system_rule_id,
+            order_type_rules=trading_system_rules.__root__.get(OrderType.BUY),
             indicator_registry=indicator_registry
         )
 
         self.sell_rules = OrderTypeRule(
             signal_indexes=deepcopy(signal_indexes),
             order_type=OrderType.SELL,
-            order_type_rules=trading_system_rules.root.get(OrderType.SELL),
-            trading_system_rule_id=self.trading_system_rule_id,
+            order_type_rules=trading_system_rules.__root__.get(OrderType.SELL),
             indicator_registry=indicator_registry
         )
         self.group_rules = self.buy_rules.group_rules + self.sell_rules.group_rules
         self.block_rules = self.buy_rules.rules + self.sell_rules.rules
-
-    def __repr__(self) -> str:
-        """
-        Returns a string representation of the TradingSystemRule instance.
-        """
-        return (f"TradingSystemRule("
-                f"trading_system_rule_id={self.trading_system_rule_id}")

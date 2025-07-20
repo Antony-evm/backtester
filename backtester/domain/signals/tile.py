@@ -6,8 +6,6 @@ import os
 from typing import List
 
 import pandas as pd
-from backtesting_io_manager.exceptions.validation_exceptions import \
-    InvalidComparisonError
 
 from backtester.api.requests.trading_system import RuleProperty
 from backtester.domain.enums.rule_property_type import RulePropertyType
@@ -41,11 +39,6 @@ class Tile:
         :param other: Another Tile instance to compare against.
         :return: True if both instances are equal, False otherwise.
         """
-        if not isinstance(other, Tile):
-            raise InvalidComparisonError(
-                first_type=str(type(self)),
-                second_type=str(type(other))
-            )
         return (
                 self.type == other.type and
                 self.name == other.name and

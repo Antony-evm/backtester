@@ -33,11 +33,24 @@ class Backtester:
             backtesting_request: BacktestingRequest
     ) -> StrategyGroupedStats:
         ticker_data = self.ticker_service.fetch_ticker_data(backtesting_request.ticker_request)
+
         trading_system_rules = self.signal_service.process_trading_system_rules(
             ticker_data=ticker_data,
             trading_system_rules=backtesting_request.trading_system_rules,
-            trading_system_id=backtesting_request.trading_system_id,
         )
+        self.signal_service.calculate_indicators(
+            ticker_data=ticker_data,
+        )
+
+        ticker_data = self.signal_service.calculate_rules_mask(
+            ticker_data=ticker_data.copy(),
+            trading_system_rule=trading_system_rules
+        )
+        self.signal_service.process_trading_system_rules(
+            ticker_data=ticker_data,
+            trading_system_rules=backtesting_request.trading_system_rules,
+        )
+        print(ticker_data)
         return self._run_backtest(
             ticker_data=ticker_data,
             portfolio_management=backtesting_request.portfolio_management,

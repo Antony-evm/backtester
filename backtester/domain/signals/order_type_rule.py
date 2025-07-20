@@ -23,7 +23,6 @@ class OrderTypeRule:
             signal_indexes: pd.Series,
             order_type: OrderType,
             order_type_rules: OrderTypeRules,
-            trading_system_rule_id: str,
             indicator_registry: IndicatorRegistry
     ):
         """
@@ -31,10 +30,8 @@ class OrderTypeRule:
         :param signal_indexes: pd.Series with signals
         :param order_type: OrderType, indicating the type of order (BUY/SELL)
         :param order_type_rules: OrderTypeRules, containing rules for the order type
-        :param trading_system_rule_id: ID of the trading system rule
         :param indicator_registry: IndicatorRegistry instance to manage indicators
         """
-        self.trading_system_rule_id = trading_system_rule_id
         self.order_type_rule_id = order_type_rules.order_type_rule_id
         self.signal_indexes: pd.Series = signal_indexes
         self.order_type: OrderType = order_type
@@ -70,5 +67,4 @@ class OrderTypeRule:
         Returns a string representation of the OrderTypeRule instance.
         """
         return (f"OrderTypeRule(order_type_rule_id={self.order_type_rule_id},"
-                f" customer_id={self.customer_id},"
                 f" order_type={self.order_type})")

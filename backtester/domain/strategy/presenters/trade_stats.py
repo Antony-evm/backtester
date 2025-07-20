@@ -49,7 +49,7 @@ class TradeStats(BaseModel):
 
         return cls(
             order_type=wrap(
-                "Order Type", "String", trade.order_type
+                "Order Type", "String", trade.order_type.value
             ),
             starting_portfolio_amount=wrap(
                 "Starting Portfolio Amount",
@@ -75,7 +75,7 @@ class TradeStats(BaseModel):
                 "ROI", "Currency", trade.absolute_returns
             ),
             trade_result=wrap(
-                "Result", "String", trade.trade_result
+                "Result", "String", trade.trade_result.value
             ),
             starting_period=wrap(
                 "Entered at", "Date", trade.starting_period
@@ -87,7 +87,7 @@ class TradeStats(BaseModel):
                 "Trading Periods", "Integer", len(trade.trading_periods)
             ),
             exit_period_result=wrap(
-                "Exit Reason", "String", trade.exit_period_result
+                "Exit Reason", "String", trade.exit_period_result.value
             ),
             starting_period_open=wrap(
                 "Entry Period Open", "Currency", trade.starting_period_open

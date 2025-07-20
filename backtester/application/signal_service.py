@@ -6,11 +6,13 @@ from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 
+from backtester.api.requests.trading_system import TradingSystemRules
 from backtester.application.indicator_service import IndicatorService
 from backtester.domain.enums.order_type import OrderType
 from backtester.domain.enums.rule_comparison_method import RuleComparisonMethod
 from backtester.domain.enums.rule_property_type import RulePropertyType
 from backtester.domain.signals.group_rule import GroupRule
+from backtester.domain.signals.indicator_registry import IndicatorRegistry
 from backtester.domain.signals.order_type_rule import OrderTypeRule
 from backtester.domain.signals.rule import Rule
 from backtester.domain.signals.tile import Tile
@@ -26,12 +28,16 @@ class SignalService:
 
     def __init__(
             self,
-            indicator_service: IndicatorService
+            indicator_service: IndicatorService,
+            indicator_registry: IndicatorRegistry
+
     ):
         """
         Initializes the SignalService with an IndicatorClient.
         """
         self.indicator_service = indicator_service
+        self.indicator_registry = indicator_registry
+        self.price_columns = ['open', 'high', 'low', 'close']
 
     @staticmethod
     def _get_value_mask(tile: Tile) -> float:
@@ -42,7 +48,7 @@ class SignalService:
         """
         return tile.parameters.value
 
-    async def get_indicator_masks(
+    def get_indicator_masks(
             self,
             ticker_data: pd.DataFrame,
             indicator_data: Dict
@@ -54,10 +60,11 @@ class SignalService:
         :return: A dictionary of masks for each indicator.
         """
         logger.debug("Calculating indicator masks for ticker data.")
-        masks = await self.indicator_service.get_indicator_masks(
-            df=ticker_data,
-            indicator_data=indicator_data
+        masks = self.indicator_service.compute_masks(
+            indicators=indicator_data,
+            price_data={**ticker_data[self.price_columns].to_dict(orient='list')}
         )
+
         logger.debug("Indicator masks calculated successfully.")
         return masks
 
@@ -260,3 +267,100 @@ class SignalService:
         )
         return ticker_data
 
+    def process_trading_system_rules(
+            self,
+            ticker_data: pd.DataFrame,
+            trading_system_rules: TradingSystemRules,
+    ) -> TradingSystemRule:
+        """
+        Processes the trading system rules to
+         generate signals based on the provided ticker data.
+        :param ticker_data: pd.DataFrame containing ticker data.
+        :param trading_system_rules: TradingSystemRules containing the rules for the trading system.
+        :return: TradingSystemRule instance containing the generated signals.
+        """
+        base_signal_indexes = ticker_data['date'].isnull()
+        trading_system_signals = self._init_trading_system_signals(
+            signal_indexes=base_signal_indexes,
+            trading_system_rules=trading_system_rules,
+            indicator_registry=self.indicator_registry
+        )
+        return trading_system_signals
+
+    def calculate_indicators(
+            self,
+            ticker_data: pd.DataFrame,
+    ) -> None:
+        """
+        Calculates indicators for the given ticker data
+         and assigns them to the indicator registry.
+        :param ticker_data: pd.DataFrame containing ticker data.
+        """
+        logger.debug("Calculating indicators for ticker data")
+        masks = self.get_indicator_masks(
+            ticker_data=ticker_data,
+            indicator_data=self.indicator_registry.indicator_data
+        )
+        self.assign_indicator_masks(
+            masks=masks,
+            indicators=self.indicator_registry.indicators
+        )
+
+    def calculate_rules_mask(
+            self,
+            ticker_data: pd.DataFrame,
+            trading_system_rule: TradingSystemRule
+    ) -> pd.DataFrame:
+        """
+        Calculates the mask for the trading system rule
+        :param ticker_data: pd.DataFrame containing ticker data.
+        :param trading_system_rule: TradingSystemRule instance containing the rules to apply.
+        :return: pd.DataFrame with the mask applied to the ticker data.
+        """
+        logger.debug(
+            "Calculating rules mask for trading system rule %s",
+            trading_system_rule
+        )
+        ticker_data = self.get_trading_system_rule_mask(
+            ticker_data=ticker_data,
+            trading_system_rule=trading_system_rule
+        )
+        return ticker_data
+
+    @staticmethod
+    def _init_trading_system_signals(
+            signal_indexes: pd.Series,
+            trading_system_rules: TradingSystemRules,
+            indicator_registry: IndicatorRegistry
+    ) -> TradingSystemRule:
+        """
+        Initializes a TradingSystemRule instance with the provided parameters.
+        :param signal_indexes: pd.Series with signal indexes,
+        :param trading_system_rules: TradingSystemRules,
+        :param indicator_registry: IndicatorRegistry instance to manage indicators.
+        :return: TradingSystemRule instance initialized with the provided parameters.
+        """
+        return TradingSystemRule(
+            signal_indexes=signal_indexes,
+            trading_system_rules=trading_system_rules,
+            indicator_registry=indicator_registry
+        )
+
+    @staticmethod
+    def _flatten_rules(
+            strategy_signals
+    ) -> List[Rule]:
+        """
+        Flattens the rules from the strategy signals into a single list.
+        :param strategy_signals: TradingSystemRule instance containing buy and sell rules.
+        :return: List of Rule instances from both buy and sell rules.
+        """
+        group_rules = (
+                strategy_signals.buy_rules.group_rules +
+                strategy_signals.sell_rules.group_rules
+        )
+
+        rules = []
+        for rule in group_rules:
+            rules += rule.rules
+        return rules

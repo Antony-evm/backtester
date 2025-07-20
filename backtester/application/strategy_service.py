@@ -35,7 +35,7 @@ class StrategyService:
             portfolio_management=portfolio_management,
         )
 
-    async def process_trade_results(
+    def process_trade_results(
             self,
             trade: Trade,
             strategy: Strategy

@@ -2,6 +2,9 @@ from fastapi.responses import JSONResponse
 from fastapi import status
 from pydantic import BaseModel
 from typing import Optional, Any, TypeVar, Generic
+
+from pydantic.v1.generics import GenericModel
+
 from .metadata import Metadata
 
 
@@ -27,6 +30,6 @@ class SuccessResponse(JSONResponse):
 DataT = TypeVar("DataT")
 
 
-class SuccessResponseModel(BaseModel, Generic[DataT]):
+class SuccessResponseModel(GenericModel, Generic[DataT]):
     data: Optional[DataT] = None
     metadata: Metadata

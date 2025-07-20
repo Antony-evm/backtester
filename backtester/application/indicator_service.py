@@ -1,5 +1,10 @@
 import logging
-from typing import Dict
+from typing import Dict, List
+
+from backtester.api.exceptions.indicator_exceptions import IndicatorNotFoundError
+from backtester.application.indicator_validator_service import IndicatorValidatorService
+from backtester.domain.indicators.indicator import Indicator
+from backtester.domain.indicators.indicator_data import IndicatorData
 from backtester.domain.indicators.talib_indicators import *
 
 logger = logging.getLogger(__name__)
@@ -8,36 +13,35 @@ logger = logging.getLogger(__name__)
 class IndicatorService:
     def __init__(
             self,
-            output_conversion_service: OutputConversionService,
+            indicator_validator_service: IndicatorValidatorService,
             registry: Dict
     ):
         self.registry = registry
-        self.validator_service = output_conversion_service
+        self.indicator_validator_service = indicator_validator_service
         self.indicator_masks = {}
 
     def compute_masks(
             self,
-            indicator_request: IndicatorRequest
-    ) -> IndicatorResponse:
+            indicators: Dict,
+            price_data: Dict[str, List]
+    ) -> Dict[str, List]:
         """
         Retrieve indicator func from Indicator Registry.
         Preprocess the parameters,
         compute the mask,
         and postprocess the result before you return it.
         """
-        price_data = self.validator_service.convert_lists_to_numpy_arrays(
-            indicator_request.price_data
+        price_data = self.indicator_validator_service.convert_lists_to_numpy_arrays(
+            price_data
         )
-        for indicator_id in indicator_request.indicators.keys():
+        for indicator_id in indicators.keys():
             self._compute_mask(
-                indicator_request=indicator_request,
+                indicators=indicators,
                 indicator_id=indicator_id,
                 price_data=price_data
             )
 
-        return IndicatorResponse(
-            indicator_masks=self.indicator_masks
-        )
+        return self.indicator_masks
 
     def _get_indicator_class(
             self,
@@ -60,13 +64,13 @@ class IndicatorService:
 
     def _compute_mask(
             self,
-            indicator_request: IndicatorRequest,
+            indicators: Dict[str, IndicatorData],
+            price_data: Dict[str, List],
             indicator_id: str,
-            price_data: Dict
     ) -> None:
-        indicator = indicator_request.indicators.get(indicator_id)
-        name = indicator.name
-        parameters = indicator.parameters
+        indicator = indicators.get(indicator_id)
+        name = indicator.get('name')
+        parameters = indicator.get('parameters')
         parameters.update(price_data)
         # By importing all the declared indicator_subclasses
         # we are allowing them to be registered in the indicator class.

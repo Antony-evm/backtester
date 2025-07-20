@@ -1,7 +1,7 @@
 """
 StatsField Presenter
 """
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel
 
@@ -12,7 +12,7 @@ class StatsField(BaseModel):
     """
     display_name: str
     type: str
-    value: Optional[float | str | int]
+    value: Optional[Any]
 
     def __repr__(self):
         """

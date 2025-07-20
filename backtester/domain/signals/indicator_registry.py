@@ -27,7 +27,7 @@ class IndicatorRegistry:
         self.indicators[tile.id] = tile
         self.indicator_data[tile.id] = {
             'name': tile.name,
-            'parameters': tile.parameters.model_dump()
+            'parameters': tile.parameters.dict()
         }
 
     def __repr__(self) -> str:
