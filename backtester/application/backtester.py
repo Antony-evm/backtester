@@ -50,7 +50,6 @@ class Backtester:
             ticker_data=ticker_data,
             trading_system_rules=backtesting_request.trading_system_rules,
         )
-        print(ticker_data)
         return self._run_backtest(
             ticker_data=ticker_data,
             portfolio_management=backtesting_request.portfolio_management,
